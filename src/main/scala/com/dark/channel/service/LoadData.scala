@@ -1,10 +1,8 @@
 package com.dark.channel.service
 
-import java.util
 
 import com.dark.channel.entity.{ChannelActivitiesInfo, ChannelDeviceInfo, ChannelInfo, NewChannelInfo}
 import com.dark.channel.util.JsonUtil
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.spark.{SparkConf, SparkContext}
 
 import scala.collection.mutable.ArrayBuffer
@@ -14,6 +12,9 @@ import org.apache.spark.sql.SQLContext
 
 /**
   * Created by dark on 2016/11/12.
+  * 这个示例的目的就是尝试解析渠道项目的日志，把日志转化成spark sql能否解析的日志格式.
+  * 根据spark课程中的介绍。spark sql 是未来的趋势而且性能要比一般直接使用rdd要好。所以
+  * 尝试把渠道项目改写成使用spark sql。
   */
 object LoadData {
 
@@ -25,14 +26,7 @@ object LoadData {
     val jsonData=sc.textFile(dataPath+"CheckData.1474300800001").map(line=>{
       val array=line.split("[|]")
       val jsonStr=array(2)
-      //学习的要点。如何解析json字符串
-//      val b = JSON.parseFull(jsonStr)
-//      b match {
-//        // Matches if jsonStr is valid JSON and represents a Map of Strings to Any
-//        case Some(map: Map[String, Any]) => parseLog(map)
-//        case None => println("Parsing failed")
-//        case other => println("Unknown data structure: " + other)
-//      }
+
       converterLog(jsonStr)
 
     }).flatMap(_.split(";"))
