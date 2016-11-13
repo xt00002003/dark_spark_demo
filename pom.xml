@@ -94,16 +94,23 @@
       <version>${hadoop.version}</version>
       <!--<scope>provided</scope>-->
     </dependency>
+    <!--<dependency>-->
+      <!--<groupId>com.hadoop.gplcompression</groupId>-->
+      <!--<artifactId>hadoop-lzo</artifactId>-->
+      <!--<version>0.4.20</version>-->
+    <!--</dependency>-->
+    <!-- https://mvnrepository.com/artifact/com.fasterxml/jackson-module-scala -->
     <dependency>
-      <groupId>com.hadoop.gplcompression</groupId>
-      <artifactId>hadoop-lzo</artifactId>
-      <version>0.4.20</version>
+      <groupId>com.fasterxml</groupId>
+      <artifactId>jackson-module-scala</artifactId>
+      <version>1.9.3</version>
     </dependency>
+
+
   </dependencies>
 
   <build>
     <sourceDirectory>src/main/scala</sourceDirectory>
-    <testSourceDirectory>src/test/scala</testSourceDirectory>
     <plugins>
       <plugin>
         <groupId>org.scala-tools</groupId>

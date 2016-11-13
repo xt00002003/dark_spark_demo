@@ -8,7 +8,7 @@ import org.apache.spark.{SparkConf, SparkContext}
   */
 object SparkSQLPraseLog {
   def main(args: Array[String]): Unit = {
-    val dataPath="/data/workspaces/test/dark_spark_demo/data/json/";
+    val dataPath="D:\\IdeaProjects\\dark_spark_demo\\data\\json\\";
     val conf=new SparkConf().setMaster("local").setAppName("SparkSQLFirstProgrammer")
     val sc=new SparkContext(conf)
 
