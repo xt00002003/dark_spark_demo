@@ -94,11 +94,11 @@
       <version>${hadoop.version}</version>
       <!--<scope>provided</scope>-->
     </dependency>
-    <!--<dependency>-->
-      <!--<groupId>com.hadoop.gplcompression</groupId>-->
-      <!--<artifactId>hadoop-lzo</artifactId>-->
-      <!--<version>0.4.20</version>-->
-    <!--</dependency>-->
+    <dependency>
+      <groupId>com.hadoop.gplcompression</groupId>
+      <artifactId>hadoop-lzo</artifactId>
+      <version>0.4.20</version>
+    </dependency>
     <!-- https://mvnrepository.com/artifact/com.fasterxml/jackson-module-scala -->
     <dependency>
       <groupId>com.fasterxml</groupId>
@@ -107,6 +107,47 @@
     </dependency>
 
 
+    <!-- https://mvnrepository.com/artifact/com.typesafe.slick/slick_2.10 -->
+    <dependency>
+      <groupId>com.typesafe.slick</groupId>
+      <artifactId>slick_2.10</artifactId>
+      <version>3.1.0</version>
+    </dependency>
+      <dependency>
+          <groupId>org.apache.poi</groupId>
+          <artifactId>poi</artifactId>
+          <version>3.14</version>
+      </dependency>
+      <dependency>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+          <version>11.0.2</version>
+      </dependency>
+      <dependency>
+          <groupId>joda-time</groupId>
+          <artifactId>joda-time</artifactId>
+          <version>2.9.3</version>
+      </dependency>
+    <dependency>
+      <groupId>io.searchbox</groupId>
+      <artifactId>jest-common</artifactId>
+      <version>2.0.3</version>
+    </dependency>
+    <dependency>
+      <groupId>org.elasticsearch</groupId>
+      <artifactId>elasticsearch</artifactId>
+      <version>2.2.1</version>
+    </dependency>
+    <dependency>
+      <groupId>io.searchbox</groupId>
+      <artifactId>jest</artifactId>
+      <version>2.0.3</version>
+    </dependency>
+    <dependency>
+      <groupId>com.alibaba</groupId>
+      <artifactId>fastjson</artifactId>
+      <version>1.2.7</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -147,8 +188,60 @@
           </classpathContainers>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.7</source>
+          <target>1.7</target>
+        </configuration>
+      </plugin>
     </plugins>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <includes>
+          <include>**/*</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+        <includes>
+          <include>serverConfig.properties</include>
+        </includes>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
   </build>
+  <profiles>
+    <profile>
+      <id>dev</id>
+      <build>
+        <filters>
+          <filter>src/main/resources/serverConfig-dev.properties</filter>
+        </filters>
+      </build>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+    </profile>
+    <profile>
+      <id>test</id>
+      <build>
+        <filters>
+          <filter>src/main/resources/serverConfig-test.properties</filter>
+        </filters>
+      </build>
+    </profile>
+    <profile>
+      <id>prod</id>
+      <build>
+        <filters>
+          <filter>src/main/resources/serverConfig-prod.properties</filter>
+        </filters>
+      </build>
+    </profile>
+  </profiles>
   <reporting>
     <plugins>
       <plugin>
