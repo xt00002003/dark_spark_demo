@@ -3,19 +3,19 @@
     <properties>
       <option name="languageLevel" value="Scala_2_10" />
       <compiler-classpath>
-        <root url="file://$PROJECT_DIR$/../../../basicTools/repository/org/scala-lang/scala-compiler/2.10.0/scala-compiler-2.10.0.jar" />
-        <root url="file://$PROJECT_DIR$/../../../basicTools/repository/org/scala-lang/scala-library/2.10.0/scala-library-2.10.0.jar" />
-        <root url="file://$PROJECT_DIR$/../../../basicTools/repository/org/scala-lang/scala-reflect/2.10.0/scala-reflect-2.10.0.jar" />
+        <root url="file://$USER_HOME$/.m2/repository/org/scala-lang/scala-compiler/2.10.0/scala-compiler-2.10.0.jar" />
+        <root url="file://$USER_HOME$/.m2/repository/org/scala-lang/scala-library/2.10.0/scala-library-2.10.0.jar" />
+        <root url="file://$USER_HOME$/.m2/repository/org/scala-lang/scala-reflect/2.10.0/scala-reflect-2.10.0.jar" />
       </compiler-classpath>
     </properties>
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../../../basicTools/repository/org/scala-lang/scala-library/2.10.0/scala-library-2.10.0.jar!/" />
+      <root url="jar://$USER_HOME$/.m2/repository/org/scala-lang/scala-library/2.10.0/scala-library-2.10.0.jar!/" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://$PROJECT_DIR$/../../../basicTools/repository/org/scala-lang/scala-library/2.10.0/scala-library-2.10.0-javadoc.jar!/" />
+      <root url="jar://$USER_HOME$/.m2/repository/org/scala-lang/scala-library/2.10.0/scala-library-2.10.0-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://$PROJECT_DIR$/../../../basicTools/repository/org/scala-lang/scala-library/2.10.0/scala-library-2.10.0-sources.jar!/" />
+      <root url="jar://$USER_HOME$/.m2/repository/org/scala-lang/scala-library/2.10.0/scala-library-2.10.0-sources.jar!/" />
     </SOURCES>
   </library>
 </component>
