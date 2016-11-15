@@ -94,59 +94,21 @@
       <version>${hadoop.version}</version>
       <!--<scope>provided</scope>-->
     </dependency>
-    <dependency>
-      <groupId>com.hadoop.gplcompression</groupId>
-      <artifactId>hadoop-lzo</artifactId>
-      <version>0.4.20</version>
-    </dependency>
+    <!--<dependency>-->
+      <!--<groupId>com.hadoop.gplcompression</groupId>-->
+      <!--<artifactId>hadoop-lzo</artifactId>-->
+      <!--<version>0.4.20</version>-->
+    <!--</dependency>-->
     <!-- https://mvnrepository.com/artifact/com.fasterxml/jackson-module-scala -->
     <dependency>
       <groupId>com.fasterxml</groupId>
       <artifactId>jackson-module-scala</artifactId>
       <version>1.9.3</version>
     </dependency>
-
-
-    <!-- https://mvnrepository.com/artifact/com.typesafe.slick/slick_2.10 -->
     <dependency>
-      <groupId>com.typesafe.slick</groupId>
-      <artifactId>slick_2.10</artifactId>
-      <version>3.1.0</version>
-    </dependency>
-      <dependency>
-          <groupId>org.apache.poi</groupId>
-          <artifactId>poi</artifactId>
-          <version>3.14</version>
-      </dependency>
-      <dependency>
-          <groupId>com.google.guava</groupId>
-          <artifactId>guava</artifactId>
-          <version>11.0.2</version>
-      </dependency>
-      <dependency>
-          <groupId>joda-time</groupId>
-          <artifactId>joda-time</artifactId>
-          <version>2.9.3</version>
-      </dependency>
-    <dependency>
-      <groupId>io.searchbox</groupId>
-      <artifactId>jest-common</artifactId>
-      <version>2.0.3</version>
-    </dependency>
-    <dependency>
-      <groupId>org.elasticsearch</groupId>
-      <artifactId>elasticsearch</artifactId>
-      <version>2.2.1</version>
-    </dependency>
-    <dependency>
-      <groupId>io.searchbox</groupId>
-      <artifactId>jest</artifactId>
-      <version>2.0.3</version>
-    </dependency>
-    <dependency>
-      <groupId>com.alibaba</groupId>
-      <artifactId>fastjson</artifactId>
-      <version>1.2.7</version>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>5.1.33</version>
     </dependency>
   </dependencies>
 
