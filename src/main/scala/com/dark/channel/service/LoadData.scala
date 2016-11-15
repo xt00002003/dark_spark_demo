@@ -31,16 +31,19 @@ object LoadData {
     val sc=new SparkContext(conf)
     val sqlContext = new SQLContext(sc)
     val jsonData=sc.textFile(dataPath+"CheckData.1474300800001").map(line=>{
-      val array=line.split("[|]")
-      val jsonStr=array(2)
 
-      converterLog(jsonStr)
+      converterLog(line)
 
     }).flatMap(_.split(";"))
 
     val df=sqlContext.read.json(jsonData)
     df.printSchema()
     df.show()
+
+    //按应用设备数去重
+    df.groupBy("pn","ch").max("timestamp").show()
+
+
 
   }
 
@@ -78,17 +81,22 @@ object LoadData {
 
   /**
     * 把原日志的json转换成spark sql 能够解析的格式。
+    *
     * @param line
     * @return
     */
   def converterLog(line:String):String={
-    val jeroenMap = JsonUtil.fromJson[Map[String,Any]](line)
 
+    val array=line.split("[|]")
+    val timeAndIp=Map("timestamp"->array(0).toLong,"ip"->array(1))
+    val jsonStr=array(2)
+    val jeroenMap = JsonUtil.fromJson[Map[String,Any]](jsonStr)
     val activities=jeroenMap("se").asInstanceOf[List[Map[String,Long]]]
 
     val resultStr=new StringBuilder();
     for(n<- activities){
       var channelDevice=jeroenMap("us").asInstanceOf[Map[String,Any]]
+      channelDevice ++= timeAndIp
       channelDevice ++= n
       val tmp=JsonUtil.toJson(channelDevice)
       resultStr.append(tmp)
