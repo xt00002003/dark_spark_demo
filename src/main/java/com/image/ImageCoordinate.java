@@ -1,7 +1,7 @@
 package com.image;
 
 /**
- * 图像坐标对象 Created by csma on 7/15/16.
+ * 图像坐标对象
  */
 public class ImageCoordinate extends ImageDimension {
 

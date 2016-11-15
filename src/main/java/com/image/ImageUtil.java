@@ -19,8 +19,6 @@ import java.util.Iterator;
 /**
  * 通用的图片处理工具，包括图片压缩，裁减等功能
  *
- * @author yliu
- * @version v2.0
  */
 public class ImageUtil {
 

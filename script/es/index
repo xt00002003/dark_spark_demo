@@ -1,0 +1,286 @@
+DELETE /p_channel?pretty
+
+POST /p_channel_v1
+{
+    "settings": {
+        "number_of_shards" : 5,
+        "number_of_replicas" : 1
+    },
+    "mappings": {
+        "_default_" : {
+            "_all": { "enabled":  false },
+            "date_detection": false,
+             "dynamic_templates": [
+                    { "date": {
+                        "match": "*",
+                        "match_mapping_type": "date",
+                        "mapping": {
+                            "type": "date",
+                            "format": "date_time",
+                            "doc_values": true
+                        }
+                    }},
+                    { "string": {
+                        "match": "*",
+                        "match_mapping_type": "string",
+                        "mapping": {
+                            "type": "string",
+                            "index" : "not_analyzed",
+                            "doc_values": true
+                        }
+                    }},
+                    { "long": {
+                        "match": "*",
+                        "match_mapping_type": "long",
+                        "mapping": {
+                            "type": "long",
+                            "doc_values": true
+                        }
+                    }},
+                    { "boolean": {
+                        "match": "*",
+                        "match_mapping_type": "boolean",
+                        "mapping": {
+                            "type": "boolean",
+                            "doc_values": true
+                        }
+                    }}
+                ]
+        }
+    }
+}
+
+POST /_aliases
+{
+    "actions" : [
+        { "add" : { "index" : "p_channel_v1", "alias" : "p_channel" } }
+    ]
+}
+
+PUT /p_channel/_mapping/channel_statistics
+{
+        "properties": {
+            "@timestamp": {
+                "type": "date",
+                "format" : "date_time",
+                "doc_values": true
+            },
+            "actives": {
+                "type": "long",
+                "doc_values": true
+            },
+            "startAvg": {
+                "type": "float",
+                "index": "not_analyzed",
+                "doc_values": true
+            },
+            "agent": {
+                "type": "string",
+                "index": "not_analyzed",
+                "doc_values": true
+            },
+            "app_id": {
+                "type": "string",
+                "index": "not_analyzed",
+                "doc_values": true
+            },
+            "app_key": {
+                "type": "string",
+                "index": "not_analyzed",
+                "doc_values": true
+            },
+            "channel": {
+                "type": "string",
+                "index": "not_analyzed",
+                "doc_values": true
+            },
+            "channel_id": {
+                "type": "string",
+                "index": "not_analyzed",
+                "doc_values": true
+            },
+            "country": {
+                "type": "string",
+                "index": "not_analyzed",
+                "doc_values": true
+            },
+            "create_time": {
+                "type": "date",
+                "format" : "date_time",
+                "doc_values": true
+            },
+            "day": {
+                "type": "string",
+                "index": "not_analyzed",
+                "doc_values": true
+            },
+            "id": {
+                "type": "string",
+                "index": "not_analyzed",
+                "doc_values": true
+            },
+            "keep1": {
+                "type": "long",
+                "doc_values": true
+            },
+            "keep1Ratio": {
+                "type": "float",
+                "doc_values": true
+            },
+            "keep3": {
+                "type": "long",
+                "doc_values": true
+            },
+            "keep3Ratio": {
+                "type": "float",
+                "doc_values": true
+            },
+            "keep30": {
+                "type": "long",
+                "doc_values": true
+            },
+            "keep30Ratio": {
+                "type": "float",
+                "doc_values": true
+            },
+            "keep7": {
+                "type": "long",
+                "doc_values": true
+            },
+            "keep7Ratio": {
+                "type": "float",
+                "doc_values": true
+            },
+            "news": {
+                "type": "long",
+                "doc_values": true
+            },
+            "pkg_name": {
+                "type": "string",
+                "index": "not_analyzed",
+                "doc_values": true
+            },
+            "source": {
+                "type": "string",
+                "index": "not_analyzed",
+                "doc_values": true
+            },
+            "starts": {
+                "type": "long",
+                "doc_values": true
+            },
+            "total": {
+                "type": "long",
+                "doc_values": true
+            },
+            "type": {
+                "type": "string",
+                "index": "not_analyzed",
+                "doc_values": true
+            }
+        }
+}
+
+PUT /p_channel/_mapping/app_devices
+{
+            "properties": {
+                "pkg_name": {
+                    "type": "string",
+                    "index": "not_analyzed",
+                    "doc_values": true
+                },
+                "channel": {
+                    "type": "string",
+                    "index": "not_analyzed",
+                    "doc_values": true
+                },
+                "country": {
+                    "type": "string",
+                    "index": "not_analyzed",
+                    "doc_values": true
+                },
+                "device_id": {
+                    "type": "string",
+                    "index": "not_analyzed",
+                    "doc_values": true
+                },
+                "first_time": {
+                    "type": "date",
+                    "format" : "date_time",
+                    "doc_values": true
+                },
+                "id": {
+                    "type": "string",
+                    "index": "not_analyzed",
+                    "doc_values": true
+                },
+                "language": {
+                    "type": "string",
+                    "index": "not_analyzed",
+                    "doc_values": true
+                },
+                "model": {
+                    "type": "string",
+                    "index": "not_analyzed",
+                    "doc_values": true
+                },
+                "app_key": {
+                    "type": "string",
+                    "index": "not_analyzed",
+                    "doc_values": true
+                }
+            }
+}
+
+PUT /p_channel/_mapping/devices
+{
+            "properties": {
+                "device_id": {
+                    "type": "string",
+                    "index": "not_analyzed",
+                    "doc_values": true
+                },
+                "imei" : {
+                    "type" : "string",
+                    "index" : "not_analyzed",
+                    "doc_values" : true
+                },
+                "mac" : {
+                    "type" : "string",
+                    "index" : "not_analyzed",
+                    "doc_values" : true
+                },
+               "android_id" : {
+                   "type" : "string",
+                   "index" : "not_analyzed",
+                   "doc_values" : true
+              },
+                  "uuid" : {
+                  "type" : "string",
+                  "index" : "not_analyzed",
+                  "doc_values" : true
+             },
+                "first_time" : {
+                    "type": "date",
+                    "format" : "date_time",
+                    "doc_values": true
+                }
+            }
+}
+
+
+POST /p_channel/_search
+{
+  "from" : 0,
+  "size" : 10,
+  "query" : {
+    "term" : {
+      "type" : "nonGP"
+    }
+  },
+  "sort" : [ {
+    "channel" : {
+      "order" : "asc"
+    }
+  } ]
+}

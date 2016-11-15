@@ -1,0 +1,116 @@
+CREATE TABLE test_user (
+  id bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键自动增长',
+  uuid varchar(40) DEFAULT NULL COMMENT '用来标识同一记录不同站点的版本',
+  im varchar(30) DEFAULT NULL COMMENT 'IMEI',
+  mac varchar(30) DEFAULT NULL COMMENT 'mac',
+  ai varchar(30) DEFAULT NULL COMMENT 'ANDROID_ID',
+  t varchar(16) DEFAULT NULL COMMENT 'model',
+  c varchar(16) NOT NULL COMMENT 'country',
+  la varchar(16) NOT NULL COMMENT 'language',
+  create_time varchar(30) DEFAULT NULL COMMENT '创建时间yyyy-MM-dd',
+  PRIMARY KEY (id),
+  KEY idx_uuid (uuid,create_time),
+  KEY idx_mac (mac,create_time),
+  KEY idx_ai (ai,create_time),
+  KEY idx_im (im,create_time),
+  KEY idx_create_time (create_time)
+) ENGINE=InnoDB AUTO_INCREMENT=1031 DEFAULT CHARSET=utf8 COMMENT='测试用户表'
+
+CREATE TABLE test_country (
+  id bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键自动增长',
+  uuid varchar(40) NOT NULL COMMENT '用来标识同一记录不同站点的版本',
+  country_code varchar(64) NOT NULL COMMENT '国家代码',
+  country_name varchar(64) NOT NULL COMMENT '国家名称',
+  region_code varchar(64) NOT NULL COMMENT '大洲',
+  language_code varchar(64) NOT NULL COMMENT '语言',
+  PRIMARY KEY (id)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='国家列表'
+
+CREATE TABLE test_user_history (
+  id bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键自动增长',
+  user_id bigint(20) NOT NULL COMMENT '用来标识同一记录不同站点的版本',
+  app_id bigint(20) NOT NULL COMMENT '国家代码',
+  pkg_name varchar(64) NOT NULL COMMENT '国家代码',
+  channel_name varchar(64) NOT NULL COMMENT '国家名称',
+  create_time varchar(30) DEFAULT NULL COMMENT '创建时间yyyy-MM-dd',
+  PRIMARY KEY (id),
+  KEY idx_user_id (user_id,create_time)
+) ENGINE=InnoDB AUTO_INCREMENT=5547 DEFAULT CHARSET=utf8 COMMENT='用户历史记录表,在留存率的计算中需要用到这个表的记录'
+
+CREATE TABLE app
+(
+    id INT(11) PRIMARY KEY NOT NULL COMMENT '主键ID' AUTO_INCREMENT,
+    name VARCHAR(64) NOT NULL COMMENT '应用名称',
+    pkg_name VARCHAR(64) NOT NULL COMMENT '包名称',
+    version_code VARCHAR(32) COMMENT '版本号',
+    version_name VARCHAR(64) COMMENT '版本名称',
+    description VARCHAR(64) COMMENT '描述',
+    created_user BIGINT(64) NOT NULL COMMENT '创建人',
+    created_time DATETIME NOT NULL COMMENT '创建时间'
+)
+
+CREATE TABLE app_device (
+  id bigint(20) NOT NULL AUTO_INCREMENT,
+  app_id int(11) NOT NULL COMMENT '应用ID',
+  device_id varchar(45) NOT NULL COMMENT '设备号',
+  imei varchar(64) NOT NULL COMMENT '设备IMEI',
+  cu_ref varchar(64) DEFAULT NULL COMMENT '设备cu',
+  model varchar(64) DEFAULT NULL COMMENT '设备型号',
+  language varchar(64) DEFAULT NULL COMMENT '语言',
+  country varchar(64) DEFAULT NULL COMMENT '国家',
+  channel_id int(11) NOT NULL COMMENT 'refer标识',
+  first_time datetime NOT NULL COMMENT '首次时间',
+  PRIMARY KEY (id),
+  KEY app_device_idx (app_id,device_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='设备表'
+
+CREATE TABLE channel (
+  id int(11) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  app_id int(11) NOT NULL COMMENT '应用ID',
+  name varchar(64) NOT NULL COMMENT 'refer名称(type_mserchant_gourp)',
+  type varchar(64) NOT NULL COMMENT 'GPPAID,NoGp',
+  agent varchar(64) NOT NULL COMMENT '合作方',
+  source varchar(64) NOT NULL COMMENT '广告来源(google,facebook)',
+  group varchar(64) DEFAULT NULL COMMENT '自增GroupID',
+  tracker varchar(64) NOT NULL COMMENT '跟踪号',
+  tracker_link varchar(256) DEFAULT NULL COMMENT '跟踪链接',
+  description varchar(500) DEFAULT NULL COMMENT '描述',
+  created_user bigint(64) NOT NULL COMMENT '创建人',
+  created_time datetime NOT NULL COMMENT '创建时间',
+  PRIMARY KEY (id)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8
+
+
+CREATE TABLE channel_statistics_day (
+  id bigint(20) NOT NULL AUTO_INCREMENT,
+  app_id int(11) NOT NULL,
+  app_id_local int(11) NOT NULL,
+  agent varchar(64) DEFAULT NULL,
+  source varchar(64) DEFAULT NULL,
+  group varchar(64) DEFAULT NULL,
+  country varchar(45) NOT NULL,
+  channel_id int(11) DEFAULT NULL,
+  day datetime DEFAULT NULL COMMENT '统计时间',
+  news int(11) DEFAULT NULL COMMENT '新增用户',
+  news_by_hour varchar(64) DEFAULT NULL,
+  actives int(11) DEFAULT NULL COMMENT '活跃用户',
+  actives_by_hour varchar(64) DEFAULT NULL,
+  starts int(11) DEFAULT NULL COMMENT '启动次数',
+  starts_by_hour varchar(64) DEFAULT NULL,
+  total int(11) DEFAULT NULL COMMENT '总用户数',
+  keep_1 int(11) DEFAULT NULL,
+  keep_3 int(11) DEFAULT NULL,
+  keep_7 int(11) DEFAULT NULL,
+  keep_30 int(11) DEFAULT NULL,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='设备分析表'
+
+
+CREATE TABLE source (
+  id int(11) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  name varchar(64) NOT NULL COMMENT '名称',
+  description varchar(256) DEFAULT NULL COMMENT '描述',
+  created_user bigint(64) NOT NULL COMMENT '创建人',
+  created_time datetime NOT NULL COMMENT '创建时间',
+  PRIMARY KEY (id)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8

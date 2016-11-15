@@ -3,9 +3,6 @@ package com.image;
 /**
  * The Image demension
  * 
- * @author yliu
- * @date 30 May, 2016 3:38:04 pm
- * @version v1.0
  */
 public class ImageDimension {
     private int width;

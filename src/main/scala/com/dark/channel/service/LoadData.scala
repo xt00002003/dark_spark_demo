@@ -2,7 +2,7 @@ package com.dark.channel.service
 
 
 import com.dark.channel.entity.{ChannelActivitiesInfo, ChannelDeviceInfo, ChannelInfo, NewChannelInfo}
-import com.dark.channel.util.JsonUtil
+import com.dark.channel.util.{JsonUtil, PropertiesUtil}
 import org.apache.spark.{SparkConf, SparkContext}
 
 import scala.collection.mutable.ArrayBuffer
@@ -19,7 +19,14 @@ import org.apache.spark.sql.SQLContext
 object LoadData {
 
   def main(args: Array[String]): Unit = {
-    val dataPath="D:\\IdeaProjects\\dark_spark_demo\\data\\json\\";
+
+    val osname=System.getProperties().getProperty("os.name")
+
+    val dataPath=getDataPath(osname)
+
+
+
+//    val dataPath="D:\\IdeaProjects\\dark_spark_demo\\data\\json\\";
     val conf=new SparkConf().setMaster("local").setAppName("LoadData")
     val sc=new SparkContext(conf)
     val sqlContext = new SQLContext(sc)
@@ -37,6 +44,16 @@ object LoadData {
 
   }
 
+  def getDataPath(osName:String):String={
+    osName match {
+        case "Linux" => PropertiesUtil.getValue("linux.path")
+        case "Windows" =>PropertiesUtil.getValue("windows.path")
+        case _ => PropertiesUtil.getValue("linux.path")
+
+    }
+  }
+
+  @deprecated
   def parseLog(map:Map[String, Any]):ChannelInfo={
     val device=map("us")
     val activities=map("se")

@@ -3,6 +3,6 @@ package com.dark.channel.entity
 /**
   * Created by dark on 2016/11/12.
   */
-case class NewChannelInfo (ai: String, am: Double, appkey: String, c: String, cc: Double, ch: String, dateTime: String, fr: Double, h: Double, im: String, ir: Boolean, la: String, mac: String, om: Double, pn: String,sv:Double,t:String,w:Double,e:Double,s:Double) {
+case class NewChannelInfo(androidId: String, am: Double, appkey: String, country: String, cc: Double, channel: String, dateTime: String, fr: Double, h: Double, imei: String, ir: Boolean, language: String, mac: String, om: Double, packageName: String, sv: Double, model: String, w: Double, ActivityEndTime: Double, ActivityStartTime: Double) {
 
 }
