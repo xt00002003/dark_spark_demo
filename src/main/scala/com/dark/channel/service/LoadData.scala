@@ -40,8 +40,10 @@ object LoadData {
     df.printSchema()
     df.show()
 
+    import sqlContext.implicits._
+
     //按应用设备数去重
-    df.groupBy("pn","ch").max("timestamp").show()
+    df.groupBy("pn","ch").max("timestamp").withColumnRenamed("max(timestamp)","timestamp").join(df,Seq("pn","ch","timestamp"),"left").show()
 
 
 
@@ -50,7 +52,7 @@ object LoadData {
   def getDataPath(osName:String):String={
     osName match {
         case "Linux" => PropertiesUtil.getValue("linux.path")
-        case "Windows" =>PropertiesUtil.getValue("windows.path")
+        case "Windows 8.1" =>PropertiesUtil.getValue("windows.path")
         case _ => PropertiesUtil.getValue("linux.path")
 
     }
