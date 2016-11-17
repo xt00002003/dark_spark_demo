@@ -12,7 +12,7 @@ import org.apache.spark.sql.SQLContext
 
 /**
   * Created by dark on 2016/11/12.
-  * 这个示例的目的就是尝试解析渠道项目的日志，把日志转化成spark sql能否解析的日志格式.
+  * 这个示例的目的就是尝试解析日志，把日志转化成spark sql能否解析的日志格式.
   * 根据spark课程中的介绍。spark sql 是未来的趋势而且性能要比一般直接使用rdd要好。所以
   * 尝试把改写成使用spark sql。
   */
