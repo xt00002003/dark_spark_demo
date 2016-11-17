@@ -41,9 +41,19 @@ object LoadData {
     df.show()
 
     import sqlContext.implicits._
-
+    val channelRdd=df
     //按应用设备数去重
-    df.groupBy("pn","ch").max("timestamp").withColumnRenamed("max(timestamp)","timestamp").join(df,Seq("pn","ch","timestamp"),"left").show()
+    val processedChannelRdd=df.groupBy("pn","ch").max("timestamp").withColumnRenamed("max(timestamp)","timestamp").join(df,Seq("pn","ch","timestamp"),"left").show()
+
+    //判断新用户使用的是没有去重复的数据。
+    /**
+      * AnalysisNewDevice
+      * 经过筛选最后只剩下有时间最大的一条设备记录。用于统计新设备用户。这样就避免了多个work同时插入新设备的问题。
+      * 1.原先逻辑使用了mapToPair、aggregateByKey来进行数据的筛选。
+      * 2.使用mapPartitionsToPair、reduceByKey来生成应用新增设备总数。
+      * 如果是新设备就插入到es中app_device表。不是就删除这条记录。最后对剩下的记录统计应用的新设备数。
+      * 3.最后使用foreachPartition来更新修改用户。
+      */
 
 
 
