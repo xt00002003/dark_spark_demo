@@ -12,9 +12,9 @@ import org.apache.spark.sql.SQLContext
 
 /**
   * Created by dark on 2016/11/12.
-  * 这个示例的目的就是尝试解析渠道项目的日志，把日志转化成spark sql能否解析的日志格式.
+  * 这个示例的目的就是尝试解析日志，把日志转化成spark sql能否解析的日志格式.
   * 根据spark课程中的介绍。spark sql 是未来的趋势而且性能要比一般直接使用rdd要好。所以
-  * 尝试把渠道项目改写成使用spark sql。
+  * 尝试把改写成使用spark sql。
   */
 object LoadData {
 
@@ -41,9 +41,19 @@ object LoadData {
     df.show()
 
     import sqlContext.implicits._
-
+    val channelRdd=df
     //按应用设备数去重
-    df.groupBy("pn","ch").max("timestamp").withColumnRenamed("max(timestamp)","timestamp").join(df,Seq("pn","ch","timestamp"),"left").show()
+    val processedChannelRdd=df.groupBy("pn","ch").max("timestamp").withColumnRenamed("max(timestamp)","timestamp").join(df,Seq("pn","ch","timestamp"),"left").show()
+
+    //判断新用户使用的是没有去重复的数据。
+    /**
+      * AnalysisNewDevice
+      * 经过筛选最后只剩下有时间最大的一条设备记录。用于统计新设备用户。这样就避免了多个work同时插入新设备的问题。
+      * 1.原先逻辑使用了mapToPair、aggregateByKey来进行数据的筛选。
+      * 2.使用mapPartitionsToPair、reduceByKey来生成应用新增设备总数。
+      * 如果是新设备就插入到es中app_device表。不是就删除这条记录。最后对剩下的记录统计应用的新设备数。
+      * 3.最后使用foreachPartition来更新修改用户。
+      */
 
 
 

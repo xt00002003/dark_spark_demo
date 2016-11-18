@@ -1,13 +1,13 @@
 <component name="libraryTable">
   <library name="Maven: org.apache.parquet:parquet-format:2.3.0-incubating">
     <CLASSES>
-      <root url="jar://D:/java_tools/m2/org/apache/parquet/parquet-format/2.3.0-incubating/parquet-format-2.3.0-incubating.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../basicTools/repository/org/apache/parquet/parquet-format/2.3.0-incubating/parquet-format-2.3.0-incubating.jar!/" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://D:/java_tools/m2/org/apache/parquet/parquet-format/2.3.0-incubating/parquet-format-2.3.0-incubating-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../basicTools/repository/org/apache/parquet/parquet-format/2.3.0-incubating/parquet-format-2.3.0-incubating-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://D:/java_tools/m2/org/apache/parquet/parquet-format/2.3.0-incubating/parquet-format-2.3.0-incubating-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../basicTools/repository/org/apache/parquet/parquet-format/2.3.0-incubating/parquet-format-2.3.0-incubating-sources.jar!/" />
     </SOURCES>
   </library>
 </component>
