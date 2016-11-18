@@ -12,6 +12,6 @@ object MysqlProgrammer {
     val sc=new SparkContext(conf)
     val sqlContext = new SQLContext(sc)
     val jdbcDF = sqlContext.read.format("jdbc").options(Map("url" -> "jdbc:mysql://localhost:3308/dark", "driver" -> "com.mysql.jdbc.Driver", "dbtable" -> "user_info", "user" -> "root", "password" -> "Aa123456")).load()
-    jdbcDF.show()
+    jdbcDF.filter("user_id=1").rdd.foreach(println(_))
   }
 }
