@@ -89,7 +89,6 @@ object SparkSQLESFirstProgrammer {
   def selectDataFromEsById()={
     val conf=new SparkConf().setMaster("local").setAppName("SparkSQLESFirstProgrammer")
     val sc=new SparkContext(conf)
-    //
     val sqlContext=new  SQLContext(sc)
     val options = Map("es.read.field.include" -> "username,password,mail,uuid","es.query"->"?q=_id:AViBAklKH_jb4nlq9PVX")
     val data=sqlContext.read.format("org.elasticsearch.spark.sql").options(options).load("dark_test/person")
