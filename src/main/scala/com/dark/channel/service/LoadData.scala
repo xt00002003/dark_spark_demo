@@ -10,6 +10,7 @@ import org.apache.spark.{SparkConf, SparkContext}
 import scala.collection.mutable.ArrayBuffer
 import scala.util.parsing.json.{JSON, JSONObject}
 import org.apache.spark.sql.{SQLContext, SaveMode}
+import org.elasticsearch.index.query.{QueryBuilder, QueryBuilders}
 
 
 /**
@@ -97,8 +98,17 @@ object LoadData {
             val model=row(19).asInstanceOf[String]
             val appDeviceInfo=AppDeviceInfo(pkgName,channel,country,deviceId,DateTimeUtils.toEsTimeString(timestamp),deviceId,language,model,appKey)
             val source=JsonUtil.toJson(appDeviceInfo)
-            val esId=pkgName+"#"+deviceId
-            EsClientFactory.getEsTransportClient.prepareIndex("p_channel","app_devices",esId).setSource(source).execute().actionGet()
+            var esId=pkgName+"#"+deviceId
+            var response=EsClientFactory.getEsTransportClient.prepareGet("p_channel","app_devices",esId).execute().actionGet()
+            var hits=response.getSource
+            if(hits.isEmpty){
+              EsClientFactory.getEsTransportClient.prepareIndex("p_channel","app_devices",esId).setSource(source).execute().actionGet()
+              esId= pkgName+"#"+channel+"#"+country+appKey
+              response=EsClientFactory.getEsTransportClient.prepareGet("p_channel","channel_statistics",esId).execute().actionGet()
+              hits=response.getSource
+
+            }
+
 
          }
       }
