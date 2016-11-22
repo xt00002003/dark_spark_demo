@@ -77,9 +77,8 @@ object LoadData {
 
 
     val newDeviceDF=sqlContext.read.json(preDdd)
-    newDeviceDF.printSchema()
-    newDeviceDF.show()
     val deviceDF=newDeviceDF.groupBy("deviceId").max("timestamp").withColumnRenamed("max(timestamp)","timestamp").join(newDeviceDF,Seq("deviceId","timestamp")).cache()
+    deviceDF.show()
     deviceDF.foreachPartition(
       iter=>{
          if(iter.hasNext){
@@ -106,6 +105,16 @@ object LoadData {
               esId= pkgName+"#"+channel+"#"+country+appKey
               response=EsClientFactory.getEsTransportClient.prepareGet("p_channel","channel_statistics",esId).execute().actionGet()
               hits=response.getSource
+              if(hits.isEmpty){
+                  val channelStatisticsMap=Map("@timestamp"->DateTimeUtils.toEsTimeString(timestamp),
+                    "actives"->0,"startAvg"->0,"agent"->"","app_id"->appKey,"app_key"->appKey,"channel"->channel,
+                    "channel_id"->"","country"->country,"create_time"->DateTimeUtils.toEsTimeString(timestamp),
+                    "day"->0,"id"->esId,"keep1"->0,"keep1Ratio"->0.0,"keep3"->0,"keep3Ratio"->0.0,
+                    "keep30"->0,"keep30Ratio"->0.0,"keep7"->0,"keep7Ratio"->0.0,"news"->1,
+                    "pkg_name"->pkgName,"source"->"","starts"->1,"type"->"")
+                  EsClientFactory.getEsTransportClient.prepareIndex("p_channel","channel_statistics",esId).setSource(JsonUtil.toJson(channelStatisticsMap)).execute().actionGet()
+              }
+
 
             }
 
