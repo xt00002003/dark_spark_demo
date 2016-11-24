@@ -123,6 +123,30 @@ object LoadData {
       }
     )
 
+    import sqlContext.implicits._
+    val startsDF=preDdd.toDF()
+
+    //
+    val processedStartsRdd=startsDF.groupBy("pn","ch").max("timestamp").withColumnRenamed("max(timestamp)","timestamp").join(startsDF,Seq("pn","ch","timestamp"),"left")
+    startsDF.select("pkg_name","channel_id","country").where("channel_id is not null and country is not null").groupBy("pkg_name","channel_id","country").count().show()
+
+
+
+    val activitiesJsonData=preDdd.map(line=>{
+      converterActivitiesLog(line)
+
+    }).flatMap(_.split(";"))
+
+    val activitiesDF=sqlContext.read.json(activitiesJsonData)
+    activitiesDF.printSchema()
+    activitiesDF.show()
+    activitiesDF.select("pkg_name","channel_id","country").where("channel_id is not null and country is not null").groupBy("pkg_name","channel_id","country").count().show()
+
+
+
+
+
+
     /**
       * 这里只是为了练习spark sql 而这样做了。这样实现的功能并不好，原因如下：
       *  1.最后的数据都集中返回给了driver上。数据量大的话，会把driver机器撑爆。
