@@ -34,7 +34,7 @@ object LoadData {
     val conf=new SparkConf().setMaster("local").setAppName("LoadData")
     val sc=new SparkContext(conf)
     val sqlContext = new SQLContext(sc)
-    val jsonData=sc.textFile(dataPath+"CheckData.1474300800001").cache()
+    val jsonData=sc.textFile(dataPath+"CheckData.1474300800002").cache()
     val preDdd=PrePraseLog.prePraseLog(jsonData).cache()
 
     /**
@@ -75,74 +75,29 @@ object LoadData {
 //
 //    })
 
+    //新设备分析方法
+    NewDevicePrase.praseLog2(preDdd,sqlContext)
 
-    val newDeviceDF=sqlContext.read.json(preDdd)
-    val deviceDF=newDeviceDF.groupBy("deviceId").max("timestamp").withColumnRenamed("max(timestamp)","timestamp").join(newDeviceDF,Seq("deviceId","timestamp")).cache()
-    deviceDF.show()
-    deviceDF.foreachPartition(
-      iter=>{
-         if(iter.hasNext){
-            val row=iter.next()
-            val deviceId=row(0).asInstanceOf[String]
-            val timestamp=row(1).asInstanceOf[Long]
-            val androidId=row(2).asInstanceOf[String]
-            val appKey=row(4).asInstanceOf[String]
-            val country=row(5).asInstanceOf[String]
-            val channel=row(7).asInstanceOf[String]
-            val imei=row(11).asInstanceOf[String]
-            val ip=row(12).asInstanceOf[String]
-            val language=row(14).asInstanceOf[String]
-            val mac=row(15).asInstanceOf[String]
-            val pkgName=row(17).asInstanceOf[String]
-            val model=row(19).asInstanceOf[String]
-            val appDeviceInfo=AppDeviceInfo(pkgName,channel,country,deviceId,DateTimeUtils.toEsTimeString(timestamp),deviceId,language,model,appKey)
-            val source=JsonUtil.toJson(appDeviceInfo)
-            var esId=pkgName+"#"+deviceId
-            var response=EsClientFactory.getEsTransportClient.prepareGet("p_channel","app_devices",esId).execute().actionGet()
-            var hits=response.getSource
-            if(hits.isEmpty){
-              EsClientFactory.getEsTransportClient.prepareIndex("p_channel","app_devices",esId).setSource(source).execute().actionGet()
-              esId= pkgName+"#"+channel+"#"+country+appKey
-              response=EsClientFactory.getEsTransportClient.prepareGet("p_channel","channel_statistics",esId).execute().actionGet()
-              hits=response.getSource
-              if(hits.isEmpty){
-                  val channelStatisticsMap=Map("@timestamp"->DateTimeUtils.toEsTimeString(timestamp),
-                    "actives"->0,"startAvg"->0,"agent"->"","app_id"->appKey,"app_key"->appKey,"channel"->channel,
-                    "channel_id"->"","country"->country,"create_time"->DateTimeUtils.toEsTimeString(timestamp),
-                    "day"->0,"id"->esId,"keep1"->0,"keep1Ratio"->0.0,"keep3"->0,"keep3Ratio"->0.0,
-                    "keep30"->0,"keep30Ratio"->0.0,"keep7"->0,"keep7Ratio"->0.0,"news"->1,
-                    "pkg_name"->pkgName,"source"->"","starts"->1,"type"->"")
-                  EsClientFactory.getEsTransportClient.prepareIndex("p_channel","channel_statistics",esId).setSource(JsonUtil.toJson(channelStatisticsMap)).execute().actionGet()
-              }
-
-
-            }
-
-
-         }
-      }
-    )
-
-    import sqlContext.implicits._
-    val startsDF=preDdd.toDF()
-
-    //
-    val processedStartsRdd=startsDF.groupBy("pn","ch").max("timestamp").withColumnRenamed("max(timestamp)","timestamp").join(startsDF,Seq("pn","ch","timestamp"),"left")
-    startsDF.select("pkg_name","channel_id","country").where("channel_id is not null and country is not null").groupBy("pkg_name","channel_id","country").count().show()
-
-
-
-    val activitiesJsonData=preDdd.map(line=>{
-      converterActivitiesLog(line)
-
-    }).flatMap(_.split(";"))
-
-    val activitiesDF=sqlContext.read.json(activitiesJsonData)
-    activitiesDF.printSchema()
-    activitiesDF.show()
-    activitiesDF.select("pkg_name","channel_id","country").where("channel_id is not null and country is not null").groupBy("pkg_name","channel_id","country").count().show()
-
-
+//    import sqlContext.implicits._
+//    val startsDF=preDdd.toDF()
+//
+//    //
+//    val processedStartsRdd=startsDF.groupBy("pn","ch").max("timestamp").withColumnRenamed("max(timestamp)","timestamp").join(startsDF,Seq("pn","ch","timestamp"),"left")
+//    startsDF.select("pkg_name","channel_id","country").where("channel_id is not null and country is not null").groupBy("pkg_name","channel_id","country").count().show()
+//
+//
+//
+//    val activitiesJsonData=preDdd.map(line=>{
+//      converterActivitiesLog(line)
+//
+//    }).flatMap(_.split(";"))
+//
+//    val activitiesDF=sqlContext.read.json(activitiesJsonData)
+//    activitiesDF.printSchema()
+//    activitiesDF.show()
+//    activitiesDF.select("pkg_name","channel_id","country").where("channel_id is not null and country is not null").groupBy("pkg_name","channel_id","country").count().show()
+//
+//
 
 
 
