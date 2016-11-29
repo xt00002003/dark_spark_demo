@@ -70,6 +70,12 @@ object NewDevicePrase {
     * @param sqlContext
     */
   def praseLog2(rdd: RDD[String],sqlContext: SQLContext):Unit={
+
+    processStatistics(rdd,sqlContext)
+
+  }
+
+  def processNewDevice(rdd: RDD[String],sqlContext: SQLContext):Unit={
     val addESIdRdd=rdd.map(line=>{
       var jeroenMap = JsonUtil.fromJson[Map[String, Any]](line)
       val pn=jeroenMap("pn")
@@ -92,8 +98,54 @@ object NewDevicePrase {
       .withColumnRenamed("deviceId","device_id")
       .withColumnRenamed("la","language")
       .withColumnRenamed("t","model")
-    val options = Map("es.write.operation" -> "index", "es.resource" -> "p_channel/app_devices","es.mapping.id"->"id",ConfigurationOptions.ES_SERIALIZATION_READER_VALUE_CLASS -> classOf[SpecificBasicDateTimeReader].getCanonicalName)
+    //upsert means:known as merge or insert if the data does not exist, updates if the data exists (based on its id).
+    val options = Map("es.write.operation" -> "upsert", "es.resource" -> "p_channel/app_devices","es.mapping.id"->"id",ConfigurationOptions.ES_SERIALIZATION_READER_VALUE_CLASS -> classOf[SpecificBasicDateTimeReader].getCanonicalName)
     //完成了新增app设备的插入
     newDeviceESDF.write.format("org.elasticsearch.spark.sql").options(options).mode(SaveMode.Append).save()
+  }
+
+  def processStatistics(rdd: RDD[String],sqlContext: SQLContext):Unit={
+    val statisticESIdRDD=rdd.map(line=>{
+      val jeroenMap = JsonUtil.fromJson[Map[String, Any]](line)
+      val pkgName=jeroenMap("pn")
+      val channel=jeroenMap("ch")
+      val country=jeroenMap("c")
+      val appKey=jeroenMap("appkey")
+      val id=pkgName+"#"+channel+"#"+country+appKey
+//      jeroenMap ++= Map("id"->id)
+      val timestamp=jeroenMap("timestamp").asInstanceOf[Long]
+//      jeroenMap ++= Map("first_time"->DateTimeUtils.toEsTimeString(timestamp))
+      val channelStatisticsMap=Map("@timestamp"->DateTimeUtils.toEsTimeString(timestamp),
+        "actives1"->0,"startAvg"->0,"agent"->"","app_id"->appKey,"app_key"->appKey,"channel"->channel,
+        "channel_id"->"","country"->country,"create_time"->DateTimeUtils.toEsTimeString(timestamp),
+        "day"->0,"id"->id,"keep1"->0,"keep1Ratio"->0.0,"keep3"->0,"keep3Ratio"->0.0,
+        "keep30"->0,"keep30Ratio"->0.0,"keep7"->0,"keep7Ratio"->0.0,"news1"->1,
+        "pkg_name"->pkgName,"source"->"","starts"->1,"type"->"")
+      JsonUtil.toJson(channelStatisticsMap)
+    })
+    val statisticIDDF=sqlContext.read.json(statisticESIdRDD)
+    statisticIDDF.show()
+//    val statisticsIdOptions = Map("es.read.field.include" -> "id","es.read.metadata"->"true")
+    val statisticsIdOptions = Map("es.read.metadata"->"true")
+    val esData=sqlContext.read.format("org.elasticsearch.spark.sql").options(statisticsIdOptions).load("p_channel/channel_statistics")
+//    esData.show()
+
+    sqlContext.udf.register("combine2Column", combine2Column _)
+
+    val leftResult=statisticIDDF.join(esData,Seq("id"),"left")
+    leftResult.show()
+    leftResult.registerTempTable("channel_statistics")
+
+    sqlContext.sql("SELECT combine2Column(news,news1) as result,news,news1 FROM channel_statistics").show()
+
+  }
+
+  def combine2Column(col1:Any,col2:Any):Long={
+     var x=0L
+     if(null!=col1)x=col1.asInstanceOf[Long]
+     var y=0L
+     if(null!=col2)y=col2.asInstanceOf[Long]
+
+     x+y
   }
 }
