@@ -8,6 +8,9 @@ import org.elasticsearch.hadoop.cfg.ConfigurationOptions
 
 /**
   * Created by darkxue on 28/11/16.
+  * 使用了2种方式去解析：
+  * 1.查询完数据后在foreach中使用es的client包进行操作.
+  * 2.直接使用spark sql 对es进行操作.
   */
 object NewDevicePrase {
    /**
@@ -71,6 +74,7 @@ object NewDevicePrase {
     */
   def praseLog2(rdd: RDD[String],sqlContext: SQLContext):Unit={
 
+    processNewDevice(rdd,sqlContext)
     processStatistics(rdd,sqlContext)
 
   }
@@ -116,11 +120,8 @@ object NewDevicePrase {
       val timestamp=jeroenMap("timestamp").asInstanceOf[Long]
 //      jeroenMap ++= Map("first_time"->DateTimeUtils.toEsTimeString(timestamp))
       val channelStatisticsMap=Map("@timestamp"->DateTimeUtils.toEsTimeString(timestamp),
-        "actives1"->0,"startAvg"->0,"agent"->"","app_id"->appKey,"app_key"->appKey,"channel"->channel,
-        "channel_id"->"","country"->country,"create_time"->DateTimeUtils.toEsTimeString(timestamp),
-        "day"->0,"id"->id,"keep1"->0,"keep1Ratio"->0.0,"keep3"->0,"keep3Ratio"->0.0,
-        "keep30"->0,"keep30Ratio"->0.0,"keep7"->0,"keep7Ratio"->0.0,"news1"->1,
-        "pkg_name"->pkgName,"source"->"","starts"->1,"type"->"")
+        "create_time1"->DateTimeUtils.toEsTimeString(timestamp),
+        "id"->id,"news1"->1,"starts1"->1)
       JsonUtil.toJson(channelStatisticsMap)
     })
     val statisticIDDF=sqlContext.read.json(statisticESIdRDD)
@@ -132,12 +133,14 @@ object NewDevicePrase {
 
     sqlContext.udf.register("combine2Column", combine2Column _)
 
-    val leftResult=statisticIDDF.join(esData,Seq("id"),"left")
+    val leftResult=statisticIDDF.join(esData,Seq("id"),"left").select("id","news","news1","starts","starts1")
     leftResult.show()
     leftResult.registerTempTable("channel_statistics")
 
-    sqlContext.sql("SELECT combine2Column(news,news1) as result,news,news1 FROM channel_statistics").show()
-
+    val newsStatisticsDeviceDF=sqlContext.sql("SELECT id,combine2Column(news,news1) as news,combine2Column(starts,starts1) as starts FROM channel_statistics")
+    val writeOptions = Map("es.write.operation" -> "upsert", "es.resource" -> "p_channel/channel_statistics","es.mapping.id"->"id",ConfigurationOptions.ES_SERIALIZATION_READER_VALUE_CLASS -> classOf[SpecificBasicDateTimeReader].getCanonicalName)
+    //完成了新增设备统计的插入.null值在es的查询中不会显示
+    newsStatisticsDeviceDF.write.format("org.elasticsearch.spark.sql").options(writeOptions).mode(SaveMode.Append).save()
   }
 
   def combine2Column(col1:Any,col2:Any):Long={
