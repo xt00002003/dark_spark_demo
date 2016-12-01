@@ -8,6 +8,12 @@ import org.elasticsearch.hadoop.cfg.ConfigurationOptions
 
 /**
   * Created by darkxue on 28/11/16.
+  * 经过筛选最后只剩下有时间最大的一条设备记录。用于统计新设备用户(app_device)。这样就避免了多个work同时插入新设备的问题。
+  * 1.原先逻辑使用了mapToPair、aggregateByKey来进行数据的筛选。
+  * 2.使用mapPartitionsToPair、reduceByKey来生成应用新增设备总数。
+  * 如果是新设备就插入到es中app_device表。不是就删除这条记录。最后对剩下的记录统计应用的新设备数。
+  * 3.最后使用foreachPartition来更新修改用户。
+  *
   * 使用了2种方式去解析：
   * 1.查询完数据后在foreach中使用es的client包进行操作.
   * 2.直接使用spark sql 对es进行操作.
